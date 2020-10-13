@@ -1,0 +1,50 @@
+Sound:
+    Sample_Rate: 24000    
+
+GRU_Size: [128, 256, 512, 256, 128] #The length of sizes must be odd, and the sizes must be symmetric. Each size must be even.
+
+Train:    
+    Train_Pattern:
+        Wav_Paths: [
+            '/datasets/VCTK/',
+            '/datasets/LibriTTS/',
+            '/datasets/Emotion/',
+            ]
+        Noise_Paths: [
+            '/datasets/Noises/DEMAND/',
+            '/datasets/Noises/ESC50/',
+            '/datasets/Noises/RIRS_NOISES/',
+            ]
+        Wav_Length: 1024
+    Eval_Pattern:
+        Wav_Paths: [
+            '/datasets/HanYua/',
+            ]
+        Noise_Paths: [
+            '/datasets/Noises/115Noise/',
+            ]
+    Num_Workers: 2
+    Batch_Size: 32
+    Learning_Rate:
+        Initial: 1.0e-3
+        Base: 4000     # This is similar warmup step, but no warmup because of radam.
+    ADAM:
+        Beta1: 0.9
+        Beta2: 0.999
+        Epsilon: 1.0e-6
+    Weight_Decay: 1.0e-6
+    Gradient_Norm: 5.0
+    Max_Step: 800000
+    Checkpoint_Save_Interval: 1000
+    Logging_Interval: 100
+    Evaluation_Interval: 1000
+    Inference_Interval: 1000
+    Initial_Inference: true
+    Inference_Pattern_File_in_Train: 'Inference_Wav_for_Training.txt'
+
+Inference_Batch_Size: 1
+Inference_Path: '/data/results/RHRNet/Inference'
+Checkpoint_Path: '/data/results/RHRNet/Checkpoint'
+Log_Path: '/data/results/RHRNet/Log'
+Use_Mixed_Precision: false   # apex is required.
+Device: '5'

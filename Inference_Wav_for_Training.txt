@@ -1,0 +1,4 @@
+Label	Path
+SEA00001	./Inference_Wav/2LYzQPlK058_Trim_01_40.wav
+SEA00002	./Inference_Wav/sjh01_02_02.wav
+SEA00003	./Inference_Wav/zyTEgABdBfE_Trim_02_21.wav
