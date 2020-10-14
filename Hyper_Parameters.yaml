@@ -23,10 +23,11 @@ Train:
         Noise_Paths: [
             '/datasets/Noises/115Noise/',
             ]
-    Num_Workers: 2
-    Batch_Size: 32
+    Num_Workers: 4
+    Batch_Size: 16
+    Sample_per_Batch: 64
     Learning_Rate:
-        Initial: 1.0e-3
+        Initial: 1.0e-4
         Base: 4000     # This is similar warmup step, but no warmup because of radam.
     ADAM:
         Beta1: 0.9
@@ -39,7 +40,7 @@ Train:
     Logging_Interval: 100
     Evaluation_Interval: 1000
     Inference_Interval: 1000
-    Initial_Inference: true
+    Initial_Inference: false
     Inference_Pattern_File_in_Train: 'Inference_Wav_for_Training.txt'
 
 Inference_Batch_Size: 1

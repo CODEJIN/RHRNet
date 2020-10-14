@@ -93,7 +93,7 @@ class Trainer:
         logging.info('The number of development patterns = {}.'.format(len(dev_Dataset)))
         logging.info('The number of inference patterns = {}.'.format(len(inference_Dataset)))
 
-        collater = Collater(wav_length= self.hp.Train.Train_Pattern.Wav_Length)
+        collater = Collater(wav_length= self.hp.Train.Train_Pattern.Wav_Length, samples= self.hp.Train.Sample_per_Batch)
         inference_Collater = Inference_Collater(reduction= 2 ** (len(self.hp.GRU_Size) // 2 + 1))
 
         self.dataLoader_Dict = {}
@@ -247,8 +247,8 @@ class Trainer:
         self.scalar_Dict['Evaluation'] = defaultdict(float)
 
         image_Dict = {
-            'Wav/Mixture': (audios[-1].cpu().numpy(), None),
-            'Wav/Target': (noisies[-1].cpu().numpy(), None),
+            'Wav/Audio': (audios[-1].cpu().numpy(), None),
+            'Wav/Noise': (noisies[-1].cpu().numpy(), None),
             'Wav/Prediction': (predictions[-1].cpu().numpy(), None)
             }
         self.writer_Dict['Evaluation'].add_image_dict(image_Dict, self.steps)

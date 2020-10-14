@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import yaml, pickle, os, math, logging
-from random import choice, randint
+from random import choice, randint, sample
 
 from Audio import Audio_Prep
 
@@ -53,23 +53,27 @@ class Inference_Dataset(torch.utils.data.Dataset):
 
 
 class Collater:
-    def __init__(self, wav_length):
+    def __init__(self, wav_length, samples):
         self.wav_Length = wav_length
+        self.samples = samples
 
     def __call__(self, batch):
         audios = []
         noisies = []
         for audio, noise in batch:
-            offset = randint(0, audio.shape[0] - self.wav_Length)
-            audio = audio[offset:offset + self.wav_Length]
-            offset = randint(0, noise.shape[0] - self.wav_Length)
-            noise = noise[offset:offset + self.wav_Length]
-            alpha = np.random.rand()
+            if any([x.shape[0] < self.wav_Length * 2 for x in [audio, noise]]):
+                continue
+            audio_Offsets = sample(range(0, audio.shape[0] - self.wav_Length), self.samples)
+            noise_Offsets = sample(range(0, noise.shape[0] - self.wav_Length), self.samples)            
+            for audio_Offset, noise_Offset in zip(audio_Offsets,noise_Offsets):
+                audio_Sample = audio[audio_Offset:audio_Offset + self.wav_Length]
+                noise_Sample = noise[noise_Offset:noise_Offset + self.wav_Length]
+                alpha = np.random.rand()
 
-            noisy = audio + alpha * noise
-            noisy /= np.max(np.abs(noisy)) * 1.01
-            audios.append(audio)
-            noisies.append(noisy)
+                noisy = audio_Sample + alpha * noise_Sample
+                noisy /= np.max(np.abs(noisy)) * 1.01 + 1e-7
+                audios.append(audio_Sample)
+                noisies.append(noisy)
 
         audios = torch.FloatTensor(audios)   # [Batch, Time]
         noisies = torch.FloatTensor(noisies)    # [Batch, Time]

@@ -10,7 +10,7 @@ class RHRNet(torch.nn.Module):
         self.hp = hyper_parameters
         self.layer_Dict = torch.nn.ModuleDict()
 
-        self.layer_Dict['Start'] = torch.nn.GRU(
+        self.layer_Dict['Start'] = GRU(
             input_size= 1,
             hidden_size= self.hp.GRU_Size[0] // 4,
             num_layers= 1,
@@ -20,7 +20,7 @@ class RHRNet(torch.nn.Module):
         self.layer_Dict['PReLU_Start'] = torch.nn.PReLU()
 
         for index, size in enumerate(self.hp.GRU_Size):
-            self.layer_Dict['GRU_{}'.format(index)] = torch.nn.GRU(
+            self.layer_Dict['GRU_{}'.format(index)] = GRU(
                 input_size= size,
                 hidden_size= size // 2,
                 num_layers= 1,
@@ -29,7 +29,7 @@ class RHRNet(torch.nn.Module):
                 )
             self.layer_Dict['PReLU_{}'.format(index)] = torch.nn.PReLU()
 
-        self.layer_Dict['Last'] = torch.nn.GRU(
+        self.layer_Dict['Last'] = GRU(
             input_size= self.hp.GRU_Size[-1] // 2,
             hidden_size= 1,
             num_layers= 1,
@@ -66,6 +66,13 @@ class RHRNet(torch.nn.Module):
 
         return x.squeeze(2)
 
+class GRU(torch.nn.GRU):
+    def reset_parameters(self):
+        for name, parameter in self.named_parameters():
+            if 'weight' in name:
+                torch.nn.init.xavier_uniform_(parameter)
+            elif 'bias' in name:
+                torch.nn.init.zeros_(parameter)
 
 # https://github.com/tuantle/regression-losses-pytorch
 class Log_Cosh_Loss(torch.nn.Module):
