@@ -10,27 +10,22 @@ class RHRNet(torch.nn.Module):
         self.hp = hyper_parameters
         self.layer_Dict = torch.nn.ModuleDict()
 
-        self.layer_Dict['Start'] = GRU(
-            input_size= 1,
-            hidden_size= self.hp.GRU_Size[0] // 4,
-            num_layers= 1,
-            batch_first= True,
-            bidirectional= True
-            )
-        self.layer_Dict['PReLU_Start'] = torch.nn.PReLU()
-
-        for index, size in enumerate(self.hp.GRU_Size):
+        previous_Size = 1
+        for index, (size, ratio, residual) in enumerate(zip(self.hp.Model.GRU_Size, self.hp.Model.Step_Ratio, self.hp.Model.Residual)):
             self.layer_Dict['GRU_{}'.format(index)] = GRU(
-                input_size= size,
-                hidden_size= size // 2,
+                input_size= previous_Size,
+                hidden_size= size,
                 num_layers= 1,
                 batch_first= True,
                 bidirectional= True
                 )
-            self.layer_Dict['PReLU_{}'.format(index)] = torch.nn.PReLU()
+            if not residual is None:
+                self.layer_Dict['PReLU_{}'.format(index)] = torch.nn.PReLU()
+
+            previous_Size = int(size * 2 / ratio)
 
         self.layer_Dict['Last'] = GRU(
-            input_size= self.hp.GRU_Size[-1] // 2,
+            input_size= previous_Size,
             hidden_size= 1,
             num_layers= 1,
             batch_first= True,
@@ -42,27 +37,16 @@ class RHRNet(torch.nn.Module):
         x: [Batch, Time]
         '''
         x = x.unsqueeze(2)   # [Batch, Time, 1]
-        x = self.layer_Dict['Start'](x)[0]   # [Batch, Time, 2]
-        x = self.layer_Dict['PReLU_Start'](x)
-        x = x.reshape(x.size(0), x.size(1) // 2, x.size(2) * 2) # [Batch, Time / 2, 4]
-        
+
         stacks = []
-        for index in range(0, len(self.hp.GRU_Size) // 2):
-            x = self.layer_Dict['GRU_{}'.format(index)](x)[0]   # [Batch, Time, Dim / 2 * 2]
-            x = self.layer_Dict['PReLU_{}'.format(index)](x)
+        for index, (ratio, residual) in enumerate(zip(self.hp.Model.Step_Ratio, self.hp.Model.Residual)):            
+            if not residual is None:
+                x = self.layer_Dict['PReLU_{}'.format(index)](x + stacks[residual])
+            x = self.layer_Dict['GRU_{}'.format(index)](x)[0]
             stacks.append(x)
-            x = x.reshape(x.size(0), x.size(1) // 2, x.size(2) * 2) # [Batch, Time / 2, Dim / 2 * 2 * 2]
+            x = x.reshape(x.size(0), int(x.size(1) * ratio), int(x.size(2) / ratio))
 
-        x = self.layer_Dict['GRU_{}'.format(len(self.hp.GRU_Size) // 2)](x)[0]   # [Batch, Time, Dim / 2 * 2]
-        x = self.layer_Dict['PReLU_{}'.format(len(self.hp.GRU_Size) // 2)](x)
-        x = x.reshape(x.size(0), x.size(1) * 2, x.size(2) // 2)
-
-        for index in range(len(self.hp.GRU_Size) // 2 + 1, len(self.hp.GRU_Size)):
-            x = self.layer_Dict['GRU_{}'.format(index)](x)[0]            
-            x = self.layer_Dict['PReLU_{}'.format(index)](x + stacks.pop())   # Residual
-            x = x.reshape(x.size(0), x.size(1) * 2, x.size(2) // 2)
-
-        x = self.layer_Dict['Last'](x)[0]   # [Batch, Time, 1]
+        x = self.layer_Dict['Last'](x)[0]
 
         return x.squeeze(2)
 

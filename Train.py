@@ -94,7 +94,7 @@ class Trainer:
         logging.info('The number of inference patterns = {}.'.format(len(inference_Dataset)))
 
         collater = Collater(wav_length= self.hp.Train.Train_Pattern.Wav_Length, samples= self.hp.Train.Sample_per_Batch)
-        inference_Collater = Inference_Collater(reduction= 2 ** (len(self.hp.GRU_Size) // 2 + 1))
+        inference_Collater = Inference_Collater(reduction= 2 ** (len(self.hp.Model.GRU_Size) // 2 + 1))
 
         self.dataLoader_Dict = {}
         self.dataLoader_Dict['Train'] = torch.utils.data.DataLoader(

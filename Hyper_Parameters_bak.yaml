@@ -1,10 +1,7 @@
 Sound:
     Sample_Rate: 24000    
 
-Model:
-    GRU_Size: [2, 128, 256, 512, 256, 128]
-    Step_Ratio: [0.5, 0.5, 0.5, 2, 2, 2]
-    Residual: [null, null, null, null, 2, 1]
+GRU_Size: [128, 256, 512, 256, 128] #The length of sizes must be odd, and the sizes must be symmetric. Each size must be even.
 
 Train:    
     Train_Pattern:
@@ -28,7 +25,7 @@ Train:
             ]
     Num_Workers: 4
     Batch_Size: 16
-    Sample_per_Batch: 32
+    Sample_per_Batch: 64
     Learning_Rate:
         Initial: 1.0e-4
         Base: 4000     # This is similar warmup step, but no warmup because of radam.
