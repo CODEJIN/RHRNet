@@ -207,7 +207,7 @@ class Trainer:
             if self.steps >= self.hp.Train.Max_Step:
                 return
 
-        self.epochs += self.hp.Train.Train_Pattern.Accumulated_Dataset_Epoch
+        self.epochs += 1
 
     @torch.no_grad()
     def Evaluation_Step(self, audios, noisies):
