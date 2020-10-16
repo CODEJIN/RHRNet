@@ -18,7 +18,7 @@ Train:
             '/datasets/Noises/ESC50/',
             '/datasets/Noises/RIRS_NOISES/',
             ]
-        Wav_Length: 1024
+        Wav_Length: 4096
     Eval_Pattern:
         Wav_Paths: [
             '/datasets/HanYua/',
@@ -26,9 +26,9 @@ Train:
         Noise_Paths: [
             '/datasets/Noises/115Noise/',
             ]
-    Num_Workers: 4
-    Batch_Size: 16
-    Sample_per_Batch: 32
+    Num_Workers: 8
+    Batch_Size: 8
+    Sample_per_Batch: 16
     Learning_Rate:
         Initial: 1.0e-4
         Base: 4000     # This is similar warmup step, but no warmup because of radam.

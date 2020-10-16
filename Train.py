@@ -183,7 +183,10 @@ class Trainer:
             self.scalar_Dict['Train']['Loss/{}'.format(tag)] += loss
 
     def Train_Epoch(self):
-        for audios, noisies in self.dataLoader_Dict['Train']:
+        for audios, _, noisies in self.dataLoader_Dict['Train']:
+            if any([x.dim() != 2 for x in [audios, noisies]]):
+                continue
+
             self.Train_Step(audios, noisies)
             
             if self.steps % self.hp.Train.Checkpoint_Save_Interval == 0:
@@ -231,11 +234,14 @@ class Trainer:
 
         self.model.eval()
 
-        for step, (audios, noisies) in tqdm(
+        for step, (audios, noises, noisies) in tqdm(
             enumerate(self.dataLoader_Dict['Dev'], 1),
             desc='[Evaluation]',
             total= math.ceil(len(self.dataLoader_Dict['Dev'].dataset) / self.hp.Train.Batch_Size)
             ):
+            if any([x.dim() != 2 for x in [audios, noises, noisies]]):
+                continue
+
             predictions = self.Evaluation_Step(audios, noisies)
 
         self.scalar_Dict['Evaluation'] = {
@@ -248,7 +254,8 @@ class Trainer:
 
         image_Dict = {
             'Wav/Audio': (audios[-1].cpu().numpy(), None),
-            'Wav/Noise': (noisies[-1].cpu().numpy(), None),
+            'Wav/Noise': (noises[-1].cpu().numpy(), None),
+            'Wav/Noisy': (noisies[-1].cpu().numpy(), None),
             'Wav/Prediction': (predictions[-1].cpu().numpy(), None)
             }
         self.writer_Dict['Evaluation'].add_image_dict(image_Dict, self.steps)

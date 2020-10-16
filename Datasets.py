@@ -5,6 +5,9 @@ from random import choice, randint, sample
 
 from Audio import Audio_Prep
 
+def Calc_RMS(audio):
+    return np.sqrt(np.mean(np.square(audio), axis= -1))
+
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, wav_paths, noise_paths, sample_rate):
         super(Dataset, self).__init__()
@@ -59,27 +62,46 @@ class Collater:
 
     def __call__(self, batch):
         audios = []
+        noises = []
         noisies = []
         for audio, noise in batch:
             if any([x.shape[0] < self.wav_Length * 2 for x in [audio, noise]]):
                 continue
             audio_Offsets = sample(range(0, audio.shape[0] - self.wav_Length), self.samples)
-            noise_Offsets = sample(range(0, noise.shape[0] - self.wav_Length), self.samples)            
-            for audio_Offset, noise_Offset in zip(audio_Offsets,noise_Offsets):
-                audio_Sample = audio[audio_Offset:audio_Offset + self.wav_Length]
-                noise_Sample = noise[noise_Offset:noise_Offset + self.wav_Length]
-                alpha = np.random.rand()
+            noise_Offsets = sample(range(0, noise.shape[0] - self.wav_Length), self.samples)
+            for audio_Offset, noise_Offset in zip(audio_Offsets, noise_Offsets):
+                for _ in range(100):
+                    audio_Sample = audio[audio_Offset:audio_Offset + self.wav_Length]
+                    audio_RMS = Calc_RMS(audio_Sample)
+                    if audio_RMS > 0.01:
+                        break
 
-                noisy = audio_Sample + alpha * noise_Sample
-                noisy /= np.max(np.abs(noisy)) * 1.01 + 1e-7
+                for _ in range(100):
+                    noise_Sample = noise[noise_Offset:noise_Offset + self.wav_Length]
+                    noise_RMS = Calc_RMS(noise_Sample)
+                    if noise_RMS > 0.01:
+                        break
+                    
+                if any([x < 0.01 for x in [audio_RMS, noise_RMS]]):
+                    continue
+
+                alpha = audio_RMS / noise_RMS / 10 ** (np.random.uniform(0.0, 20.0) / 20)
+
+                noisy = audio_Sample + alpha * noise_Sample                
+                max_Noisy = np.max(np.abs(noisy))
+                if max_Noisy > 1.0:
+                    audio_Sample /= max_Noisy * 1.01 + 1e-7
+                    noise_Sample /= max_Noisy * 1.01 + 1e-7
+                    noisy /= max_Noisy * 1.01 + 1e-7
                 audios.append(audio_Sample)
+                noises.append(noise_Sample)
                 noisies.append(noisy)
 
         audios = torch.FloatTensor(audios)   # [Batch, Time]
+        noises = torch.FloatTensor(noises)   # [Batch, Time]
         noisies = torch.FloatTensor(noisies)    # [Batch, Time]
 
-        return audios, noisies
-
+        return audios, noises, noisies
 
 class Inference_Collater:
     def __init__(self, reduction):
