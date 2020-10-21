@@ -39,12 +39,13 @@ class RHRNet(torch.nn.Module):
         x = x.unsqueeze(2)   # [Batch, Time, 1]
 
         stacks = []
-        for index, (ratio, residual) in enumerate(zip(self.hp.Model.Step_Ratio, self.hp.Model.Residual)):            
+        for index, (ratio, residual) in enumerate(zip(self.hp.Model.Step_Ratio, self.hp.Model.Residual)):
             if not residual is None:
                 x = self.layer_Dict['PReLU_{}'.format(index)](x + stacks[residual])
             x = self.layer_Dict['GRU_{}'.format(index)](x)[0]
             stacks.append(x)
-            x = x.reshape(x.size(0), int(x.size(1) * ratio), int(x.size(2) / ratio))
+
+            x = x.reshape(x.size(0), torch.tensor(x.size(1) * ratio).long(), torch.tensor(x.size(2) / ratio).long())    # I am not sure why sometime x.size() is tensor or just int when JIT.
 
         x = self.layer_Dict['Last'](x)[0]
 

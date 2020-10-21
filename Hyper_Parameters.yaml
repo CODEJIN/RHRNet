@@ -3,7 +3,7 @@ Sound:
 
 Model:
     GRU_Size: [2, 128, 256, 512, 256, 128]
-    Step_Ratio: [0.5, 0.5, 0.5, 2, 2, 2]
+    Step_Ratio: [0.5, 0.5, 0.5, 2.0, 2.0, 2.0]
     Residual: [null, null, null, null, 2, 1]
 
 Train:    
