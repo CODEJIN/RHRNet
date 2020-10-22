@@ -18,7 +18,7 @@
 
 # Structure
 
-<img src='./Figures/Structure.svg' width=50% />
+<img src='./Figures/Structure.svg' width=100% />
 
 
 # Used dataset
