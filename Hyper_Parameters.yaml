@@ -17,6 +17,7 @@ Train:
             '/datasets/Noises/DEMAND/',
             '/datasets/Noises/ESC50/',
             '/datasets/Noises/RIRS_NOISES/',
+            '/datasets/Noises/Facebook_BGM_Short/',
             ]
         Wav_Length: 2048
     Eval_Pattern:
@@ -38,7 +39,7 @@ Train:
         Epsilon: 1.0e-6
     Weight_Decay: 1.0e-6
     Gradient_Norm: 5.0
-    Max_Step: 800000
+    Max_Step: 1000000
     Checkpoint_Save_Interval: 1000
     Logging_Interval: 100
     Evaluation_Interval: 1000

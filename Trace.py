@@ -19,7 +19,7 @@ model = RHRNet(hp).to(device)
 print(model)
 
 state_Dict = torch.load(
-    '/data/results/RHRNet/Checkpoint/S_472000.pt',
+    '/data/results/RHRNet/Checkpoint/S_1000000.pt',
     map_location= 'cpu'
     )
 model.load_state_dict(state_Dict['Model'])
