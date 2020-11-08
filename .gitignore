@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 Inference_Wav
+outputs/
+Temp.py

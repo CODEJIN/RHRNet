@@ -1,6 +1,6 @@
 # RHRNet
 
-* This code is a RHRNet unofficial code.
+* This repository is a RHRNet unofficial code.
 
 * The following is the paper I referred:
 
@@ -11,7 +11,7 @@
 * torch >= 1.6.0
 * tensorboardX >= 2.0
 * librosa >= 0.7.2
-* matplotlib >= 3.1.3   
+* matplotlib >= 3.1.3
 
 * Optional for loss flow
     * tensorboard >= 2.2.2
@@ -37,12 +37,13 @@
 
 ## I used three environment noise datasets to train and one dataset for evaluation.
 
-| Dataset     | Dataset address                                                       |
-|-------------|-----------------------------------------------------------------------|
-| DEMAND      | https://zenodo.org/record/1227121                                     |
-| ESC50       | https://github.com/karolpiczak/ESC-50                                 |
-| RIRS noises | https://www.openslr.org/28/                                           |
-| 115 Noise   | http://staff.ustc.edu.cn/~jundu/The%20team/yongxu/demo/115noises.html |
+| Dataset                   | Dataset address                                                       |
+|---------------------------|-----------------------------------------------------------------------|
+| DEMAND                    | https://zenodo.org/record/1227121                                     |
+| ESC50                     | https://github.com/karolpiczak/ESC-50                                 |
+| RIRS noises               | https://www.openslr.org/28/                                           |
+| 115 Noise                 | http://staff.ustc.edu.cn/~jundu/The%20team/yongxu/demo/115noises.html |
+| Facebook sound collection | https://www.facebook.com/sound/collection/                            |
 
 
 # Hyper parameters
@@ -105,4 +106,5 @@ python Train.py -hp <path> -s <int>
 
 # Future works
 
-* Adding some BGM as noise
+* More training
+* Adding STFT loss

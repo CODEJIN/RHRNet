@@ -46,7 +46,7 @@ class Trainer:
             os.environ['CUDA_VISIBLE_DEVICES']= self.hp.Device
 
         if not torch.cuda.is_available():
-            device = torch.self.device('cpu')
+            self.device = torch.self.device('cpu')
         else:
             self.device = torch.device('cuda:0')
             torch.backends.cudnn.benchmark = True
