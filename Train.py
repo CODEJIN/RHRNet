@@ -14,6 +14,7 @@ from random import sample
 
 from Logger import Logger
 from Modules import RHRNet, Log_Cosh_Loss
+from STFTLoss import MultiResolutionSTFTLoss
 from Datasets import Dataset, Inference_Dataset, Collater, Inference_Collater
 from Noam_Scheduler import Modified_Noam_Scheduler
 from Radam import RAdam
@@ -46,7 +47,7 @@ class Trainer:
             os.environ['CUDA_VISIBLE_DEVICES']= self.hp.Device
 
         if not torch.cuda.is_available():
-            self.device = torch.self.device('cpu')
+            device = torch.self.device('cpu')
         else:
             self.device = torch.device('cuda:0')
             torch.backends.cudnn.benchmark = True
@@ -126,7 +127,12 @@ class Trainer:
         self.model = RHRNet(hyper_parameters= self.hp).to(self.device)
 
         self.criterion_Dict = {
-            'LC': Log_Cosh_Loss().to(self.device)
+            'LC': Log_Cosh_Loss().to(self.device),
+            'STFT': MultiResolutionSTFTLoss(
+                fft_sizes= self.hp.STFT_Loss_Resolution.FFT_Sizes,
+                shift_lengths= self.hp.STFT_Loss_Resolution.Shfit_Lengths,
+                win_lengths= self.hp.STFT_Loss_Resolution.Win_Lengths,
+                ).to(self.device)
             }
         self.optimizer = RAdam(
             params= self.model.parameters(),
@@ -156,7 +162,10 @@ class Trainer:
         
         predictions = self.model(noisies)
         loss_Dict['LC'] = self.criterion_Dict['LC'](audios, predictions)
-        loss_Dict['Total'] = loss_Dict['LC']
+
+        loss_Dict['Spectral_Convergence'], loss_Dict['Magnitude'] = self.criterion_Dict['STFT'](predictions, audios)
+        loss_Dict['STFT'] = loss_Dict['Spectral_Convergence'] + loss_Dict['Magnitude']
+        loss_Dict['Total'] = loss_Dict['LC'] + loss_Dict['STFT']
         loss = loss_Dict['Total']
 
         self.optimizer.zero_grad()

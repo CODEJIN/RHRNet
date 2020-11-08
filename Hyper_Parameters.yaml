@@ -6,7 +6,12 @@ Model:
     Step_Ratio: [0.5, 0.5, 0.5, 2.0, 2.0, 2.0]
     Residual: [null, null, null, null, 2, 1]
 
-Train:    
+STFT_Loss_Resolution:
+    FFT_Sizes: [1024, 2048, 512]
+    Shfit_Lengths: [120, 240, 50]
+    Win_Lengths: [600, 1200, 240]
+
+Train:
     Train_Pattern:
         Wav_Paths: [
             '/datasets/VCTK/',
@@ -39,7 +44,7 @@ Train:
         Epsilon: 1.0e-6
     Weight_Decay: 1.0e-6
     Gradient_Norm: 5.0
-    Max_Step: 1000000
+    Max_Step: 3000000
     Checkpoint_Save_Interval: 1000
     Logging_Interval: 100
     Evaluation_Interval: 1000
