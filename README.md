@@ -1,10 +1,12 @@
 # RHRNet
 
 * This repository is a RHRNet unofficial code.
+* I added STFT loss additionally.
 
 * The following is the paper I referred:
 
     * [Abdulbaqi, J., Gu, Y., & Marsic, I. (2019). RHR-Net: A Residual Hourglass Recurrent Neural Network for Speech Enhancement. arXiv preprint arXiv:1904.07294.](https://arxiv.org/abs/1904.07294)
+
 
 # Requirements
 
@@ -103,8 +105,3 @@ python Train.py -hp <path> -s <int>
 # Result
 
 [Please see at the demo site](https://codejin.github.io/RHRNet_Demo/index.html)
-
-# Future works
-
-* More training
-* Adding STFT loss
