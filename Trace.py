@@ -19,7 +19,7 @@ model = RHRNet(hp).to(device)
 print(model)
 
 state_Dict = torch.load(
-    '/data/results/RHRNet/Checkpoint/S_1000000.pt',
+    '/data/results/RHRNet/Checkpoint/S_2000000.pt',
     map_location= 'cpu'
     )
 model.load_state_dict(state_Dict['Model'])
@@ -30,4 +30,4 @@ for param in model.parameters():
 
 x = torch.randn(size=(1, 2048)).to(device)
 traced_model = torch.jit.trace(model, x)
-traced_model.save('RHRNet.pts')
+traced_model.save('RHRNet_2M.pts')

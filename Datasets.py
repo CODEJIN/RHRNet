@@ -85,7 +85,7 @@ class Collater:
                 if any([x < 0.01 for x in [audio_RMS, noise_RMS]]):
                     continue
 
-                alpha = audio_RMS / noise_RMS / 10 ** (np.random.uniform(0.0, 15.0) / 20)                
+                alpha = audio_RMS / noise_RMS / 10 ** (np.random.uniform(-5.0, 15.0) / 20)
                 noise_Sample *= alpha
 
                 noisy = audio_Sample + noise_Sample                

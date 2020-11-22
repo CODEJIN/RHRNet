@@ -129,9 +129,9 @@ class Trainer:
         self.criterion_Dict = {
             'LC': Log_Cosh_Loss().to(self.device),
             'STFT': MultiResolutionSTFTLoss(
-                fft_sizes= self.hp.STFT_Loss_Resolution.FFT_Sizes,
-                shift_lengths= self.hp.STFT_Loss_Resolution.Shfit_Lengths,
-                win_lengths= self.hp.STFT_Loss_Resolution.Win_Lengths,
+                fft_sizes= self.hp.STFT_Loss.Resolution.FFT_Sizes,
+                shift_lengths= self.hp.STFT_Loss.Resolution.Shfit_Lengths,
+                win_lengths= self.hp.STFT_Loss.Resolution.Win_Lengths,
                 ).to(self.device)
             }
         self.optimizer = RAdam(
@@ -162,9 +162,9 @@ class Trainer:
         
         predictions = self.model(noisies)
         loss_Dict['LC'] = self.criterion_Dict['LC'](audios, predictions)
-
         loss_Dict['Spectral_Convergence'], loss_Dict['Magnitude'] = self.criterion_Dict['STFT'](predictions, audios)
         loss_Dict['STFT'] = loss_Dict['Spectral_Convergence'] + loss_Dict['Magnitude']
+        loss_Dict['STFT'] *= self.hp.STFT_Loss.Weight 
         loss_Dict['Total'] = loss_Dict['LC'] + loss_Dict['STFT']
         loss = loss_Dict['Total']
 
@@ -230,7 +230,10 @@ class Trainer:
         
         predictions = self.model(noisies)
         loss_Dict['LC'] = self.criterion_Dict['LC'](audios, predictions)
-        loss_Dict['Total'] = loss_Dict['LC']
+        loss_Dict['Spectral_Convergence'], loss_Dict['Magnitude'] = self.criterion_Dict['STFT'](predictions, audios)
+        loss_Dict['STFT'] = loss_Dict['Spectral_Convergence'] + loss_Dict['Magnitude']
+        loss_Dict['STFT'] *= self.hp.STFT_Loss.Weight
+        loss_Dict['Total'] = loss_Dict['LC'] + loss_Dict['STFT']
         loss = loss_Dict['Total']
         
         for tag, loss in loss_Dict.items():

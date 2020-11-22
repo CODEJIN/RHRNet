@@ -6,10 +6,12 @@ Model:
     Step_Ratio: [0.5, 0.5, 0.5, 2.0, 2.0, 2.0]
     Residual: [null, null, null, null, 2, 1]
 
-STFT_Loss_Resolution:
-    FFT_Sizes: [1024, 2048, 512]
-    Shfit_Lengths: [120, 240, 50]
-    Win_Lengths: [600, 1200, 240]
+STFT_Loss:
+    Resolution:
+        FFT_Sizes: [1024, 2048, 512]
+        Shfit_Lengths: [120, 240, 50]
+        Win_Lengths: [600, 1200, 240]
+    Weight: 1.0e-5
 
 Train:
     Train_Pattern:
@@ -45,7 +47,7 @@ Train:
     Weight_Decay: 1.0e-6
     Gradient_Norm: 5.0
     Max_Step: 3000000
-    Checkpoint_Save_Interval: 1000
+    Checkpoint_Save_Interval: 10000
     Logging_Interval: 100
     Evaluation_Interval: 1000
     Inference_Interval: 1000
@@ -57,4 +59,4 @@ Inference_Path: '/data/results/RHRNet/Inference'
 Checkpoint_Path: '/data/results/RHRNet/Checkpoint'
 Log_Path: '/data/results/RHRNet/Log'
 Use_Mixed_Precision: false   # apex is required.
-Device: '5'
+Device: '1'
